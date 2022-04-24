@@ -20,11 +20,11 @@ def test_codeGeneration():
     assert expected == code
 
 
-def test_codeCompilation():
+def test_compilation():
     # Given
     code_fragment = "int name = 1;"
     working_dir = tempfile.TemporaryDirectory()
-    code, java_class, stdout, stderr = compile_sample(code_fragment, working_dir)
+    code, java_class = compile_sample(code_fragment, working_dir)
     assert code == 0
 
     # When

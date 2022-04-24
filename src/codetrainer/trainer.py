@@ -23,10 +23,10 @@ def compile_sample(code_fragment, working_dir):
     java_class = class_name
     with open(java_file, "w") as f:
         f.write(generate(code_fragment=code_fragment))
-    cmd = [f"javac {java_file}"]
+    cmd = [f"javac", java_file]
     r = subprocess.run(cmd, capture_output=True, timeout=15, check=True)
 
-    return r.returncode, java_class, r.stdout, r.stderr
+    return r.returncode, java_class
 
 
 def run(class_name, dir):
