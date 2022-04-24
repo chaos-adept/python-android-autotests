@@ -2,7 +2,7 @@ from sys import stderr
 from .trainer import generate, compile_sample, run
 import tempfile
 
-def test_codeGeneration():
+def test_generation():
     # Given
     expected = """
     class HelloWorldApp {
