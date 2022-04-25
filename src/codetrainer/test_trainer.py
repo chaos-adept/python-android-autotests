@@ -3,15 +3,14 @@ from ..logging_utils import config
 
 config.setup_logging()
 
+
 def test_generation():
     # Given
-    expected = """
-    class HelloWorldApp {
-        public static void main(String[] args) {
-            String name = "Bob";
-            System.out.println("Hello World! " + name);
-        }
+    expected = """class CompilationChecker {
+    public static void main(String[] args) {
+        String name = "Bob";
     }
+}
 """
 
     # When
@@ -23,13 +22,11 @@ def test_generation():
 
 def test_compilation(tmp_path):
     # Given
-    code_fragment = "int name = 1;"
-    code, java_class = compile_sample(code_fragment, tmp_path)
-    assert code == 0
+    code_fragment = "System.out.print(\"Hello World!\");"
+    java_class = compile_sample(code_fragment, tmp_path)
 
     # When
-    code, stdout, stderr = run(java_class, tmp_path)
+    stdout = run(java_class, tmp_path)
 
     # Then
-    assert code == 0, f'unexpected error code:{code}, stderr:{stderr}'
-    assert stdout == b"Hello World! 1\r\n"
+    assert stdout == b"Hello World!"

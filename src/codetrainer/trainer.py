@@ -2,22 +2,18 @@ import logging
 import os
 import subprocess
 from string import Template
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-class_name = "HelloWorldApp"
-classTemplate = Template("""
-    class ${class_name} {
-        public static void main(String[] args) {
-            ${code_fragment}
-            System.out.println("Hello World! " + name);
-        }
-    }
-""")
+class_name = "CompilationChecker"
 
 
 def generate(code_fragment):
-    return classTemplate.substitute(class_name=class_name, code_fragment=code_fragment)
+    template_path = Path(__file__).resolve().parent / "data/templates/compilation_checker.template"
+    template_str = open(template_path, "r").read()
+    class_template = Template(template_str)
+    return class_template.substitute(class_name=class_name, code_fragment=code_fragment)
 
 
 def compile_sample(code_fragment, working_dir):
@@ -29,14 +25,17 @@ def compile_sample(code_fragment, working_dir):
     with open(java_file, "w") as f:
         f.write(generated_source)
     cmd = [f"javac", java_file]
-    r = subprocess.run(cmd, capture_output=True, timeout=15, check=True)
+    subprocess.run(cmd, capture_output=True, timeout=15, check=True)
 
-    return r.returncode, java_class
+    return java_class
 
 
 def run(class_name, dir):
     # todo try to use py4j https://www.py4j.org/getting_started.html#writing-the-java-program
     cmd = ['java', f'-cp', dir, class_name]
     logger.info("run java with args %s", cmd)
-    r = subprocess.run(cmd, capture_output=True, timeout=15, check=True)
-    return r.returncode, r.stdout, r.stderr
+    try:
+        r = subprocess.run(cmd, capture_output=True, timeout=15, check=True)
+    except subprocess.CalledProcessError as e:
+        logger.error("run failed with returncode:%s stdout:%s, stderr:%s", e.returncode, e.stdout, e.stderr)
+    return r.stdout
