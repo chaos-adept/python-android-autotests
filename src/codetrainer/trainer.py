@@ -2,26 +2,49 @@ import logging
 import os
 import re
 import subprocess
+from .errors import CompilationError
 from pathlib import Path
 from string import Template
 
 logger = logging.getLogger(__name__)
 
+# todo extract env variables with default value
 default_timeout = 15
 
 
 def generate(code_fragment, template_name, class_name):
     template_path = Path(__file__).resolve().parent / f"data/templates/{template_name}.template"
-    template_str = open(template_path, "r").read()
-    class_template = Template(template_str)
-    return class_template.substitute(class_name=class_name, code_fragment=code_fragment)
+    template_str_lines = open(template_path, "r").readlines()
+
+    # todo rewrite in the python way
+    offset = 0
+    for idx, line in enumerate(template_str_lines):
+        if "${code_fragment}" in line:
+            offset = idx
+            break
+
+    class_template = Template(''.join(template_str_lines))
+    generated = class_template.substitute(class_name=class_name, code_fragment=code_fragment)
+    logger.debug("generated finished offset=%s generated source=%s", offset, generated)
+    return generated, offset
+
+
+def to_compilation_error(stderr, offset=0):
+    regexp = rf'.+\.java:(\d+):'
+
+    def translate_offset(matchobj):
+        val = int(matchobj.group(1))
+        return f"line:{str(val - offset)}:"
+
+    translated = re.sub(regexp, translate_offset, stderr)
+    return CompilationError(translated)
 
 
 def compile_fragment(code_fragment, working_dir, template_name, class_name):
     logger.info("compile sample %s template %s", code_fragment, template_name)
     java_file = os.path.join(working_dir, f"{class_name}.java")
     java_class = class_name
-    generated_source = generate(code_fragment, template_name, class_name=class_name)
+    generated_source, offset = generate(code_fragment, template_name, class_name=class_name)
     logger.info("generated source %s", generated_source)
     with open(java_file, "w") as f:
         f.write(generated_source)
@@ -32,7 +55,9 @@ def compile_fragment(code_fragment, working_dir, template_name, class_name):
     except subprocess.CalledProcessError as err:
         logger.critical(err, exc_info=True)
         logger.error("compilation process failed with stderr %s", err.stderr)
-        raise err
+
+        # transform compilation issues
+        raise to_compilation_error(err.stderr, offset=offset)
 
     return java_class
 
@@ -49,7 +74,7 @@ def run(class_name, working_dir, stdin=None):
         raise e
 
 
-def verify_var_initialization(type_name, name, value, code_fragment):
+def verify_declarations(type_name, name, value, code_fragment):
     logger.info("verify variable declaration type=%s, name=%s, value=%s", type_name, name, value)
     expected = 1
     actual = len(re.findall(rf"{type_name}\s+{name}\s*=\s*{value}", code_fragment))
@@ -74,8 +99,8 @@ def verify_preconditions(code_fragment):
     # todo look into a ast realization
     # it has no variable renaming
 
-    verify_var_initialization("int", "n", r"\d+", code_fragment)
-    verify_var_initialization(r"int\[\]", "arr", r"new int\[n\]", code_fragment)
+    verify_declarations("int", "n", r"\d+", code_fragment)
+    verify_declarations(r"int\[\]", "arr", r"new int\[n\]", code_fragment)
 
     verify_statement("for", regexp=r"\s*for\s*\(", code_fragment=code_fragment, min_num=1)
     verify_statement("while", regexp=r"\s*while\s*\(", code_fragment=code_fragment, min_num=0, max_num=0)

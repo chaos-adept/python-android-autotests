@@ -1,4 +1,7 @@
+import pytest
+
 from ..codetrainer import trainer
+from ..codetrainer import errors
 
 from ..logging_utils import config
 
@@ -15,10 +18,11 @@ def test_generation():
 """
 
     # When
-    code = trainer.generate("String name = \"Bob\";", template_name='compilation_checker', class_name='TestGeneration')
+    code, offset = trainer.generate("String name = \"Bob\";", template_name='compilation_checker', class_name='TestGeneration')
 
     # Then
     assert expected == code
+    assert offset == 2
 
 
 def test_compilation(tmp_path):
@@ -32,6 +36,25 @@ def test_compilation(tmp_path):
 
     # Then
     assert stdout == "Hello World!"
+
+
+def test_transform_compilation_messages(tmp_path):
+    # Given
+    code_fragment = "System.out.print(\"Hello World!\"); with compilation issue;"
+
+    # When
+    with pytest.raises(errors.CompilationError) as exc_info:
+        trainer.compile_fragment(code_fragment, tmp_path, template_name='compilation_checker',
+                                 class_name='Any')
+
+    assert exc_info.value.message == '''line:1: error: ';' expected
+        System.out.print("Hello World!"); with compilation issue;
+                                                          ^
+line:1: error: not a statement
+        System.out.print("Hello World!"); with compilation issue;
+                                                           ^
+2 errors
+'''
 
 
 # todo verify failing when assets are missing

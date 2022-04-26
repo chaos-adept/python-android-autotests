@@ -12,7 +12,7 @@
 
 //еще надо незабыть при компляции сделать обработку вывода
 
-//for (int i = 1; i <= n; i++) {  --- авторское решние неправильное, там <= , а должно быть <
+//for (int i = 1; i <= n; i++) {  --- авторское решение неправильное, там <= , а должно быть <
 
 
 
@@ -30,4 +30,6 @@ provisioning
 testing
 finalizing
 
-#
+fully disable console logging for prod
+
+handle warnings
