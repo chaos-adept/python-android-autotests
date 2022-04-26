@@ -14,3 +14,11 @@ __pycache__/
 
 #idea
 .idea
+
+#Docker
+Dockerfile
+.dockerignore
+
+#git
+.git
+.gitignore

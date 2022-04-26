@@ -7,6 +7,13 @@ dist/
 __pycache__/
 *.so
 *~
+venv
+*/.cache
+*/.pytest_cache
+*/__pycache__
+*/.coverage
+*/.ipynb_checkpoints
+*/htmlcov
 
 # due to using tox and pytest
 .tox
@@ -14,3 +21,9 @@ __pycache__/
 
 #idea
 .idea
+
+.git
+.gitconfig
+.gitignore
+Dockerfile
+*.env

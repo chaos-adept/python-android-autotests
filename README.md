@@ -1,3 +1,14 @@
+
+How to run
+1. build
+`docker build . -t python-android-autotests`
+1. run
+`docker run -it python-android-autotests:latest`
+it consumes the stdin so the more useful command is the following:
+`docker exec -i python-android-autotests:latest < src/codetrainer/data/code_samples/author_solution.java_fragment`
+
+======
+
 This a test task for praktikum.
 
 The main idea is a automation process of students code samples verification java/kotlin sources.
