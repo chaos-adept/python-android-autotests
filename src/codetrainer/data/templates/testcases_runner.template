@@ -1,0 +1,36 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+class ${class_name} {
+    public static void main(String[] args) {
+
+        Integer n = null;
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            String firstLine = br.readLine();
+            n = Integer.parseInt(firstLine);
+        } catch (NumberFormatException e) {
+            System.err.println("The first input args must be an integer.");
+            System.exit(1);
+            return;
+        } catch (IOException e) {
+            System.err.println("The IO Error during initial input reading.");
+            System.exit(1);
+            return;
+        }
+
+        try {
+            ${code_fragment}
+
+            // double checking that values comes from the array
+            for (int i = 0; i < n; i++) {
+              System.out.println(arr[i]);
+            }
+        } catch (Exception e) {
+            System.err.println("Unexpected issue '" + e.getMessage() + "' during test case.");
+            System.exit(1);
+        }
+    }
+
+}
