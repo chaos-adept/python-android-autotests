@@ -18,7 +18,8 @@ def test_generation():
 """
 
     # When
-    code, offset = trainer.generate("String name = \"Bob\";", template_name='compilation_checker', class_name='TestGeneration')
+    code, offset = trainer.generate("String name = \"Bob\";", template_name='compilation_checker',
+                                    class_name='TestGeneration')
 
     # Then
     assert expected == code
@@ -58,7 +59,7 @@ line:1: error: not a statement
 
 
 # todo verify failing when assets are missing
-def test_precondidition():
+def test_precondition():
     # Given
     code_fragment = """
     int n =  2;
@@ -101,7 +102,7 @@ def test_assertio(tmp_path):
                                           class_name='Any')
 
     # When
-    trainer.assert_io(java_class, tmp_path, "any", "1\n")
+    trainer.assert_java_run_io(java_class, tmp_path, "any", "1\n")
 
     # Then
     pass

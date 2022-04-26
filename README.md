@@ -5,24 +5,16 @@ How to run
 1. run
 `docker run -it python-android-autotests:latest`
 it consumes the stdin so the more useful command is the following:
-`docker exec -i python-android-autotests:latest < src/codetrainer/data/code_samples/author_solution.java_fragment`
+`docker exec -i python-android-autotests:latest < src/code_samples/author_solution.java_fragment`
 
 ======
 
-This a test task for praktikum.
-
-The main idea is a automation process of students code samples verification java/kotlin sources.
-a student sends code sample "verification tool" applies several checks and returns results.
-
-because it is a test task there is a particular case which needs to be tested
-
-
-the student task requirements
+the main idea
 
 **Verify the following in the sample code**
 
 - arr is created and filled without the hardcoded values
-e.q. System.out.println(1); System.out.println(2);
+e.g. System.out.println(1); System.out.println(2);
 
 - code sample works for random n values (code template doesn't have input for n)
 - for statements "for" is used

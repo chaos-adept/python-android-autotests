@@ -1,14 +1,25 @@
+# logging.yml
 version: 1
+disable_existing_loggers: true
 formatters:
-  simple:
-    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  simple_formatter:
+    format: "%(asctime)s %(name)s: %(message)s"
+  extended_formatter:
+    format: "%(asctime)s %(name)s %(levelname)s: %(message)s"
+
 handlers:
+  console_handler:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: simple_formatter
+
   file_handler:
     class: logging.FileHandler
     level: INFO
-    formatter: simple
     filename: run.log
-    encoding: utf8
+    formatter: extended_formatter
+
 root:
-  level: DEBUG
-  handlers: [file_handler]
+  handlers:
+    - file_handler
+    - console_handler

@@ -33,3 +33,5 @@ finalizing
 fully disable console logging for prod
 
 handle warnings
+
+translate errors in the code

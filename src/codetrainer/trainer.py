@@ -2,7 +2,7 @@ import logging
 import os
 import re
 import subprocess
-from .errors import CompilationError
+from .errors import CompilationError, VerificationFailedError
 from pathlib import Path
 from string import Template
 
@@ -77,21 +77,26 @@ def run(class_name, working_dir, stdin=None):
 def verify_declarations(type_name, name, value, code_fragment):
     logger.info("verify variable declaration type=%s, name=%s, value=%s", type_name, name, value)
     expected = 1
-    actual = len(re.findall(rf"{type_name}\s+{name}\s*=\s*{value}", code_fragment))
+    regexp = rf"{type_name}\s+{name}\s*=\s*{value}"
+    logger.debug("regexp %s", regexp)
+    actual = len(re.findall(regexp, code_fragment))
 
-    assert actual == expected, \
-        f"Unexpected number of variable declaration '{name}' declaration, expected {expected} but {actual}"
+    if actual != expected:
+        raise VerificationFailedError(
+            f"Unexpected number of variable declaration '{name}' declaration, expected {expected} but {actual}")
 
 
 def verify_statement(statement, regexp, code_fragment, min_num, max_num=-1):
     logger.info("verify statement='%s' by regexp='%s' min_num=%s, max_num=%s", statement, regexp, min_num, max_num)
     actual = len(re.findall(regexp, code_fragment))
 
-    assert actual >= min_num, \
-        f"'{statement}' statement needs to be presented at least {min_num} times"
+    if not (actual >= min_num):
+        raise VerificationFailedError(
+            f"'{statement}' statement needs to be presented at least {min_num} times")
 
-    assert max_num < 0 or actual <= max_num, \
-        f"'{statement}' statement needs to be presented less than {max_num} times"
+    if not (max_num < 0 or actual <= max_num):
+        raise VerificationFailedError(
+            f"'{statement}' statement needs to be presented less than {max_num} times")
 
 
 def verify_preconditions(code_fragment):
@@ -117,7 +122,7 @@ def compile_testcase_runner(original_code_fragment, working_dir):
     return compile_fragment(testcase_code_fragment, working_dir, 'testcases_runner', class_name="TestCaseRunner")
 
 
-def assert_io(class_name, working_dir, stdin, expected_stdout):
+def assert_java_run_io(class_name, working_dir, stdin, expected_stdout):
     actual = run(class_name=class_name, working_dir=working_dir, stdin=stdin)
-    assert actual == expected_stdout, \
-        f"Actual output different expected. actual='\n{actual}\n' but expected='\n{expected_stdout}\n'"
+    if not (actual == expected_stdout):
+        raise VerificationFailedError(f"Actual output different expected. actual='\n{actual}\n' but expected='\n{expected_stdout}\n'")
