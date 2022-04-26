@@ -1,11 +1,9 @@
 import logging
-import os
 import sys
 import tempfile
 
-from logging_utils import config
-
 from codetrainer import trainer
+from logging_utils import config
 
 if __name__ == "__main__":
     config.setup_logging()
@@ -16,7 +14,6 @@ if __name__ == "__main__":
     code_fragment = sys.stdin.read()
     logging.info("code fragment \n%s", code_fragment)
 
-    # todo needs to be a temp dir
     with tempfile.TemporaryDirectory() as working_dir:
 
         trainer.verify_preconditions(code_fragment)

@@ -6,7 +6,7 @@ import coloredlogs
 import yaml
 
 
-def setup_logging(default_path='logging.yaml', default_level=logging.INFO, env_key='LOG_CFG'):
+def setup_logging(default_path='logging-prod.yaml', default_level=logging.INFO, env_key='LOG_CFG'):
     path = default_path
     value = os.getenv(env_key, None)
     if value:
@@ -17,6 +17,7 @@ def setup_logging(default_path='logging.yaml', default_level=logging.INFO, env_k
                 config = yaml.safe_load(f.read())
                 logging.config.dictConfig(config)
                 coloredlogs.install()
+                logging.info("log config is loaded from %s", path)
             except Exception as e:
                 print(e)
                 print('Error in Logging Configuration. Using default configs')

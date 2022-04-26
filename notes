@@ -21,11 +21,13 @@
 - код студента корректно работает при разных значениях n (в заготовке нет ввода n) (runtime)
 - используется цикл for (provisioning step)
 //it can be better? calc hash?
-- массив заполняется корректно, то есть значения не вычисляются на лету при выводе (double output)
+- массив заполняется корректно, то есть значения не вычисляются на лету при выводе (runtime, double output)
 '''
 
-разделить на четкие шаги
+refactor to the following three phase
 
 provisioning
 testing
 finalizing
+
+#
