@@ -1,6 +1,4 @@
-
-===
-How to run
+## How to run
 
 1. [install](https://docs.docker.com/engine/install/) docker 
 2. build docker image
@@ -13,8 +11,7 @@ windows
 linux
 `cat src/samples/author_solution.java_fragment | docker run -i python-android-autotests:latest`
 
-===
-Implementation notes
+## Implementation notes
 
 Folder structure notes
 
@@ -30,15 +27,13 @@ Implementation based on the verification java code sample in the several phases
 1. test-cases run - verification that code can pass test cases
 
 based on the student task
-- студент не заменил создание массива и цикл на захардкоженный вывод  (pre-check & test-cases)
-- код студента корректно работает при разных значениях n (в заготовке нет ввода n) (test-cases)
-- используется цикл for (pre-check)
-- массив заполняется корректно, то есть значения не вычисляются на лету при выводе (test-cases)
-
-В то же время мы считаем, что студент не будет переименовывать объявленные в коде переменные (pre-check)
-
-====
-On-Host Development
+- "the student did not replace the creation of an array and a loop with a dirty output" - (pre-check & test-cases)
+- "the student's code works correctly at different values of n (there is no input of n in the blank)" - (test-cases)
+- "the 'for' loop is used" - (pre-check)
+- "the array is filled in correctly, that is, the values are not calculated on the fly when output" - (test-cases)
+- "the student will not rename the variables declared in the code" - (pre-check)
+- 
+### On-Host Development
 
 1. create venv
 `python -m virtualenv --python=python3.9 venv39`
@@ -48,8 +43,7 @@ On-Host Development
 `pip install -r requirements.txt`
 `pip install -r requirements.testing.txt`
 
-====
-the Context
+### the Context
 
 **Verify the following in the sample code**
 
@@ -65,8 +59,8 @@ the non strict requirement that student is not going to rename variables from th
 the Code Template
 ```
 int n = 5;
-int[] arr = ...; // создайте массив размера n
-for (...) { // запишите в arr n квадратов чисел от 1 до n
+int[] arr = ...; // allocate array with size n
+for (...) { // assign values to arr n , squares from 1 to n
   ...
 }
 for (int i = 0; i < n; i++) {
