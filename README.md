@@ -13,8 +13,7 @@ windows
 linux
 `cat src/samples/author_solution.java_fragment | docker run -i python-android-autotests:latest`
 
-====
-
+===
 Implementation notes
 
 Folder structure notes
@@ -39,7 +38,6 @@ based on the student task
 В то же время мы считаем, что студент не будет переименовывать объявленные в коде переменные (pre-check)
 
 ====
-
 On-Host Development
 
 1. create venv
@@ -49,9 +47,9 @@ On-Host Development
 1. install requirements
 `pip install -r requirements.txt`
 `pip install -r requirements.testing.txt`
-====
 
-the main idea
+====
+the Context
 
 **Verify the following in the sample code**
 
