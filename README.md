@@ -30,6 +30,14 @@ Implementation based on the verification java code sample in the several phases
 1. runtime check - verification that code can be exectuted
 1. test-cases run - verification that code can pass test cases
 
+based on the student task
+- студент не заменил создание массива и цикл на захардкоженный вывод  (pre-check & test-cases)
+- код студента корректно работает при разных значениях n (в заготовке нет ввода n) (test-cases)
+- используется цикл for (pre-check)
+- массив заполняется корректно, то есть значения не вычисляются на лету при выводе (test-cases)
+
+В то же время мы считаем, что студент не будет переименовывать объявленные в коде переменные (pre-check)
+
 ====
 
 On-Host Development
