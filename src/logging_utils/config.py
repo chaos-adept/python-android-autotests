@@ -23,8 +23,6 @@ def setup_logging(default_path=default_path, default_level=logging.INFO, env_key
                 print(e)
                 print('Error in Logging Configuration. Using default configs')
                 logging.basicConfig(level=default_level)
-                coloredlogs.install(level=default_level)
     else:
         logging.basicConfig(level=default_level)
-        coloredlogs.install(level=default_level)
         print('Failed to load configuration file. Using default configs')

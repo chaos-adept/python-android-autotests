@@ -6,7 +6,7 @@ from .errors import CompilationError, VerificationFailedError
 from pathlib import Path
 from string import Template
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 # todo extract env variables with default value
 default_timeout = 15
@@ -25,7 +25,8 @@ def generate(code_fragment, template_name, class_name):
 
     class_template = Template(''.join(template_str_lines))
     generated = class_template.substitute(class_name=class_name, code_fragment=code_fragment)
-    logger.debug("generated finished offset=%s generated source=%s", offset, generated)
+    logging.info("generated finished offset=%s generated source=%s", offset, generated)
+
     return generated, offset
 
 
@@ -37,15 +38,18 @@ def to_compilation_error(stderr, offset=0):
         return f"line:{str(val - offset)}:"
 
     translated = re.sub(regexp, translate_offset, stderr)
+
+    regexp_class_location = r'\s+location\: class .+\s*\n'
+    translated = re.sub(regexp_class_location, '\n\n', translated)
     return CompilationError(translated)
 
 
 def compile_fragment(code_fragment, working_dir, template_name, class_name):
-    logger.info("compile sample %s template %s", code_fragment, template_name)
+    logging.info("compile sample %s template %s", code_fragment, template_name)
     java_file = os.path.join(working_dir, f"{class_name}.java")
     java_class = class_name
     generated_source, offset = generate(code_fragment, template_name, class_name=class_name)
-    logger.info("generated source %s", generated_source)
+    logging.info("generated source offset=%s, '%s'", offset, generated_source)
     with open(java_file, "w") as f:
         f.write(generated_source)
 
@@ -53,8 +57,8 @@ def compile_fragment(code_fragment, working_dir, template_name, class_name):
     try:
         subprocess.run(cmd, capture_output=True, timeout=default_timeout, check=True, text=True, encoding="utf-8")
     except subprocess.CalledProcessError as err:
-        logger.critical(err, exc_info=True)
-        logger.error("compilation process failed with stderr %s", err.stderr)
+        logging.critical(err, exc_info=True)
+        logging.error("compilation process failed with stderr %s", err.stderr)
 
         # transform compilation issues
         raise to_compilation_error(err.stderr, offset=offset)
@@ -64,21 +68,21 @@ def compile_fragment(code_fragment, working_dir, template_name, class_name):
 
 def run(class_name, working_dir, stdin=None):
     cmd = ['java', f'-cp', working_dir, class_name]
-    logger.info("run java with args %s , input=%s", cmd, stdin)
+    logging.info("run java with args %s , input=%s", cmd, stdin)
     try:
         r = subprocess.run(cmd, input=stdin, text=True, capture_output=True, timeout=default_timeout, check=True,
                            encoding="utf-8")
         return r.stdout
     except subprocess.CalledProcessError as e:
-        logger.error("run failed with returncode:%s stdout:%s, stderr:%s", e.returncode, e.stdout, e.stderr)
+        logging.error("run failed with returncode:%s stdout:%s, stderr:%s", e.returncode, e.stdout, e.stderr)
         raise e
 
 
 def verify_declarations(type_name, name, value, code_fragment):
-    logger.info("verify variable declaration type=%s, name=%s, value=%s", type_name, name, value)
+    logging.info("verify variable declaration type=%s, name=%s, value=%s", type_name, name, value)
     expected = 1
     regexp = rf"{type_name}\s+{name}\s*=\s*{value}"
-    logger.debug("regexp %s", regexp)
+    logging.debug("regexp %s", regexp)
     actual = len(re.findall(regexp, code_fragment))
 
     if actual != expected:
@@ -87,7 +91,7 @@ def verify_declarations(type_name, name, value, code_fragment):
 
 
 def verify_statement(statement, regexp, code_fragment, min_num, max_num=-1):
-    logger.info("verify statement='%s' by regexp='%s' min_num=%s, max_num=%s", statement, regexp, min_num, max_num)
+    logging.info("verify statement='%s' by regexp='%s' min_num=%s, max_num=%s", statement, regexp, min_num, max_num)
     actual = len(re.findall(regexp, code_fragment))
 
     if not (actual >= min_num):
@@ -100,7 +104,7 @@ def verify_statement(statement, regexp, code_fragment, min_num, max_num=-1):
 
 
 def verify_preconditions(code_fragment):
-    logger.info("started precondition verification")
+    logging.info("started precondition verification")
     # todo look into a ast realization
     # it has no variable renaming
 
@@ -118,11 +122,12 @@ def generate_test_case_fragment(original_code_fragment):
 
 def compile_testcase_runner(original_code_fragment, working_dir):
     testcase_code_fragment = generate_test_case_fragment(original_code_fragment)
-    logger.info("compiled test case code fragment %s", testcase_code_fragment)
+    logging.info("compiled test case code fragment %s", testcase_code_fragment)
     return compile_fragment(testcase_code_fragment, working_dir, 'testcases_runner', class_name="TestCaseRunner")
 
 
 def assert_java_run_io(class_name, working_dir, stdin, expected_stdout):
     actual = run(class_name=class_name, working_dir=working_dir, stdin=stdin)
     if not (actual == expected_stdout):
-        raise VerificationFailedError(f"Actual output different expected. actual='\n{actual}\n' but expected='\n{expected_stdout}\n'")
+        raise VerificationFailedError(
+            f"Actual output different expected. actual='\n{actual}\n' but expected='\n{expected_stdout}\n'")

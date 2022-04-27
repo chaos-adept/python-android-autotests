@@ -5,7 +5,7 @@ formatters:
 handlers:
   file_handler:
     class: logging.FileHandler
-    level: INFO
+    level: DEBUG
     formatter: simple
     filename: run.log
     encoding: utf8
@@ -16,5 +16,5 @@ handlers:
     formatter: simple
     stream: ext://sys.stdout
 root:
-  level: INFO
+  level: DEBUG
   handlers: [file_handler, console]

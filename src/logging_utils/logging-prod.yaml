@@ -2,24 +2,17 @@
 version: 1
 disable_existing_loggers: true
 formatters:
-  simple_formatter:
-    format: "%(asctime)s %(name)s: %(message)s"
   extended_formatter:
     format: "%(asctime)s %(name)s %(levelname)s: %(message)s"
 
 handlers:
-  console_handler:
-    class: logging.StreamHandler
-    level: INFO
-    formatter: simple_formatter
-
   file_handler:
     class: logging.FileHandler
-    level: INFO
-    filename: run.log
+    level: DEBUG
+    filename: run-debug.log
     formatter: extended_formatter
 
 root:
+  level: DEBUG
   handlers:
     - file_handler
-    - console_handler

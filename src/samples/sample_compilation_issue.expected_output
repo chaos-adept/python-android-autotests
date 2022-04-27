@@ -1,0 +1,6 @@
+Compilation failed. Reason: line:8: error: cannot find symbol
+  System.out.println(arr1[i]); // compilation issue in this line
+                     ^
+  symbol:   variable arr1
+
+1 error
