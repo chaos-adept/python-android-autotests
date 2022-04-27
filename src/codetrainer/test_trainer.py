@@ -29,11 +29,11 @@ def test_generation():
 def test_compilation(tmp_path):
     # Given
     code_fragment = "System.out.print(\"Hello World!\");"
-    java_class = trainer.compile_fragment(code_fragment, tmp_path, template_name='compilation_checker',
-                                          class_name='Any')
+    java_class, offset = trainer.compile_fragment(code_fragment, tmp_path, template_name='compilation_checker',
+                                                  class_name='Any')
 
     # When
-    stdout = trainer.run(java_class, tmp_path)
+    stdout = trainer.run(java_class, working_dir=tmp_path)
 
     # Then
     assert stdout == "Hello World!"
@@ -98,7 +98,7 @@ def test_compile_testcase_runner():
 def test_assertio(tmp_path):
     # Given
     code_fragment = "System.out.println(1);"
-    java_class = trainer.compile_fragment(code_fragment, tmp_path, template_name='compilation_checker',
+    java_class, offset = trainer.compile_fragment(code_fragment, tmp_path, template_name='compilation_checker',
                                           class_name='Any')
 
     # When

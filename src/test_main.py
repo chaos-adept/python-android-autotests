@@ -32,3 +32,6 @@ def test_basic_flow_for_author_solution():
 
 def test_exception_flow_compilation_issue():
     e2e_run('sample_compilation_issue')
+
+def test_exception_runtime_issue():
+    e2e_run('sample_runtime_issue')

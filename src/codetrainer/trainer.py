@@ -2,7 +2,7 @@ import logging
 import os
 import re
 import subprocess
-from .errors import CompilationError, VerificationFailedError
+from .errors import CompilationError, VerificationFailedError, JavaRunFailedError
 from pathlib import Path
 from string import Template
 
@@ -31,17 +31,29 @@ def generate(code_fragment, template_name, class_name):
 
 
 def to_compilation_error(stderr, offset=0):
-    regexp = rf'.+\.java:(\d+):'
+    error_line_regexp = rf'.+\.java:(\d+):'
 
     def translate_offset(matchobj):
         val = int(matchobj.group(1))
         return f"line:{str(val - offset)}:"
 
-    translated = re.sub(regexp, translate_offset, stderr)
+    translated = re.sub(error_line_regexp, translate_offset, stderr)
 
     regexp_class_location = r'\s+location\: class .+\s*\n'
     translated = re.sub(regexp_class_location, '\n\n', translated)
     return CompilationError(translated)
+
+
+def to_run_error(class_name, stderr, offset=0):
+    error_line_regexp = rf'at {class_name}\.main\({class_name}.java:(\d+)\)'
+
+    def translate_offset(matchobj):
+        val = int(matchobj.group(1))
+        return f"at line:{str(val - offset)}"
+
+    translated = re.sub(error_line_regexp, translate_offset, stderr)
+
+    return JavaRunFailedError(translated)
 
 
 def compile_fragment(code_fragment, working_dir, template_name, class_name):
@@ -63,10 +75,10 @@ def compile_fragment(code_fragment, working_dir, template_name, class_name):
         # transform compilation issues
         raise to_compilation_error(err.stderr, offset=offset)
 
-    return java_class
+    return java_class, offset
 
 
-def run(class_name, working_dir, stdin=None):
+def run(class_name, working_dir, stdin=None, code_fragment_offset=0):
     cmd = ['java', f'-cp', working_dir, class_name]
     logging.info("run java with args %s , input=%s", cmd, stdin)
     try:
@@ -75,7 +87,7 @@ def run(class_name, working_dir, stdin=None):
         return r.stdout
     except subprocess.CalledProcessError as e:
         logging.error("run failed with returncode:%s stdout:%s, stderr:%s", e.returncode, e.stdout, e.stderr)
-        raise e
+        raise to_run_error(class_name=class_name, stderr=e.stderr, offset=code_fragment_offset)
 
 
 def verify_declarations(type_name, name, value, code_fragment):

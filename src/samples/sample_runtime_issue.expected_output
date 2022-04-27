@@ -1,0 +1,2 @@
+Run failed. Reason: Exception in thread "main" java.lang.ArithmeticException: / by zero
+	at line:9

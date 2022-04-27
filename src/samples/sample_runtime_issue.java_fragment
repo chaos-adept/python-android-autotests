@@ -1,0 +1,11 @@
+int n = 5;
+int[] arr = new int[n];
+for (int i = 1; i < n; i++) {
+  arr[i] = i * i;
+}
+
+float c = 1 / 0; // runtime issue in this line
+
+for (int i = 0; i < n; i++) {
+  System.out.println(arr[i]);
+}
