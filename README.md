@@ -32,7 +32,8 @@ based on the student task
 - "the 'for' loop is used" - (pre-check)
 - "the array is filled in correctly, that is, the values are not calculated on the fly when output" - (test-cases)
 - "the student will not rename the variables declared in the code" - (pre-check)
-- 
+
+
 ### On-Host Development
 
 1. create venv
