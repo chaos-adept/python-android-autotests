@@ -10,7 +10,7 @@ from string import Template
 
 # todo extract env variables with default value
 default_timeout = 15
-
+default_max_memory = 128
 
 def generate(code_fragment, template_name, class_name):
     template_path = Path(__file__).resolve().parent / f"data/templates/{template_name}.template"
@@ -79,8 +79,8 @@ def compile_fragment(code_fragment, working_dir, template_name, class_name):
 
 
 def run(class_name, working_dir, stdin=None, code_fragment_offset=0):
-    cmd = ['java', f'-cp', working_dir, class_name]
-    logging.info("run java with args %s , input=%s", cmd, stdin)
+    cmd = ['java', f'-Xmx{default_max_memory}m', f'-cp', working_dir, class_name]
+    logging.info("run java with args %s , input=%s , code_fragment_offset=%s", cmd, stdin, code_fragment_offset)
     try:
         r = subprocess.run(cmd, input=stdin, text=True, capture_output=True, timeout=default_timeout, check=True,
                            encoding="utf-8")

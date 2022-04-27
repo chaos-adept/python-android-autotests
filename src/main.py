@@ -37,7 +37,7 @@ def run_autotest(code_fragment, stdout=sys.stdout):
             return
 
         # generation fragment for test cases
-        test_case_java_class, compile_runtime_offset = trainer.compile_testcase_runner(code_fragment, working_dir)
+        test_case_java_class, test_fragment_offset = trainer.compile_testcase_runner(code_fragment, working_dir)
 
         # format timeout errors correctly
         try:

@@ -1,13 +1,16 @@
 
+===
 How to run
-1. build
+
+1. [install](https://docs.docker.com/engine/install/) docker 
+2. build docker image
 `docker build . -t python-android-autotests`
-1. run
+3. run
 `docker run -it python-android-autotests:latest`
 it consumes the stdin so the more useful command is the following:
 `docker exec -i python-android-autotests:latest < src/code_samples/author_solution.java_fragment`
 
-======
+====
 
 the main idea
 
@@ -52,9 +55,5 @@ functional requirements
 - add missing code construction for verifying 
 - generate correct java-file, which can be compiled and executed
 - run a generated class on test-cases, test-cases can be presented as text files or by other suitable forms
-
-
 - check that it faces limites of memory and time execution?
-
-
 - cool feature index diff with author solution?

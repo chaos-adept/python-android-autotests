@@ -95,14 +95,27 @@ def test_compile_testcase_runner():
     assert actual == expected
 
 
-def test_assertio(tmp_path):
+def test_assert_io(tmp_path):
     # Given
     code_fragment = "System.out.println(1);"
     java_class, offset = trainer.compile_fragment(code_fragment, tmp_path, template_name='compilation_checker',
-                                          class_name='Any')
+                                                  class_name='Any')
 
     # When
     trainer.assert_java_run_io(java_class, tmp_path, "any", "1\n")
 
     # Then
     pass
+
+
+def test_transform_runtime_messages(tmp_path):
+    # Given
+    code_fragment = "System.out.print(\"Hello World!\"); \n int a = 1/0;"
+    class_name, offset = trainer.compile_fragment(code_fragment, tmp_path, template_name='compilation_checker',
+                                                  class_name='Any')
+
+    # When
+    with pytest.raises(errors.JavaRunFailedError) as exc_info:
+        trainer.run(class_name=class_name, working_dir=tmp_path, code_fragment_offset=offset)
+    assert exc_info.value.message == 'Exception in thread "main" java.lang.ArithmeticException: / by zero\n' \
+                                     '\tat line:2\n'
