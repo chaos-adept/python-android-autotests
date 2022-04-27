@@ -11,6 +11,13 @@ it consumes the stdin so the more useful command is the following:
 `docker exec -i python-android-autotests:latest < src/code_samples/author_solution.java_fragment`
 
 ====
+Folder structure notes
+
+* src/main - entry point
+* src/samples - samples for tests purposes
+* src/codetrainer/data/templates - templates for code generation
+
+====
 
 the main idea
 
