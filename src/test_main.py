@@ -1,4 +1,5 @@
 import subprocess
+import logging
 from pathlib import Path
 
 from .logging_utils import config
@@ -19,12 +20,18 @@ def expected(from_name):
 
 
 def e2e_run(from_name):
-    r = subprocess.run(["python", "src/main.py"], input=sample(from_name), text=True,
-                       shell=True,
+    stdin = sample(from_name)
+    r = subprocess.run(["python", "src/main.py"], input=stdin, text=True,
+                       shell=False,
                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                        timeout=default_timeout, check=False,
                        encoding="utf-8")
-    assert r.stdout == expected(from_name)
+    expected_result = expected(from_name)
+
+    logging.debug("stdin '%s'", stdin)
+    logging.debug("actual results stdin='%s'", r.stdout)
+    logging.debug("expected results '%s'", expected_result)
+    assert r.stdout == expected_result
 
 
 def test_basic_flow_for_author_solution():

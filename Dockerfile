@@ -1,32 +1,39 @@
-# test
+### 1. Get Linux
+FROM alpine:3.15
 
-FROM openjdk:slim as build
+### 2. Get Java via the package manager
+RUN apk update \
+&& apk upgrade \
+&& apk add --no-cache bash \
+&& apk add --no-cache --virtual=build-dependencies unzip \
+&& apk add --no-cache curl \
+&& apk add --no-cache openjdk11
 
-COPY --from=python:3.9 / /
+### 3. Get Python, PIP
 
-WORKDIR /tool-build
+RUN apk add --no-cache python3 \
+&& python3 -m ensurepip \
+&& pip3 install --upgrade pip setuptools \
+&& rm -r /usr/lib/python*/ensurepip && \
+if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi && \
+if [[ ! -e /usr/bin/python ]]; then ln -sf /usr/bin/python3 /usr/bin/python; fi && \
+rm -r /root/.cache
 
-RUN pip install tox
+
+RUN pip3 install tox
+
+# copy content
+
+WORKDIR /opt/software/autotests
 
 ADD . .
 
+# test
 
 RUN tox .
 
 
-# runtime
-
-FROM openjdk:slim
-
-COPY --from=python:3.9 / /
-
-WORKDIR /tool-run
-
-ADD ./requirements.txt ./
-
-RUN pip install -r requirements.txt
-
-ADD . .
+RUN pip3 install -r requirements.txt
 
 
 

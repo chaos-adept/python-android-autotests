@@ -27,3 +27,6 @@ venv
 .gitignore
 Dockerfile
 *.env
+
+#logs
+*.log

@@ -8,15 +8,39 @@ How to run
 3. run
 `docker run -it python-android-autotests:latest`
 it consumes the stdin so the more useful command is the following:
-`docker exec -i python-android-autotests:latest < src/code_samples/author_solution.java_fragment`
+windows
+`docker run -i python-android-autotests:latest < src/code_samples/author_solution.java_fragment`
+linux
+`cat src/samples/author_solution.java_fragment | docker run -i python-android-autotests:latest`
 
 ====
+
+Implementation notes
+
 Folder structure notes
 
 * src/main - entry point
 * src/samples - samples for tests purposes
 * src/codetrainer/data/templates - templates for code generation
 
+Implementation based on the verification java code sample in the several phases
+
+1. pre-check - verification that code has required keywords and variable initialization
+1. compilation check - verification that code can be compiled
+1. runtime check - verification that code can be exectuted
+1. test-cases run - verification that code can pass test cases
+
+====
+
+On-Host Development
+
+1. create venv
+`python -m virtualenv --python=python3.9 venv39`
+1. activate 
+`source venv39/bin/activate`
+1. install requirements
+`pip install -r requirements.txt`
+`pip install -r requirements.testing.txt`
 ====
 
 the main idea
@@ -62,5 +86,6 @@ functional requirements
 - add missing code construction for verifying 
 - generate correct java-file, which can be compiled and executed
 - run a generated class on test-cases, test-cases can be presented as text files or by other suitable forms
-- check that it faces limites of memory and time execution?
-- cool feature index diff with author solution?
+
+Non-functional
+- check that it faces limites of memory and time execution
